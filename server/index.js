@@ -1,7 +1,12 @@
+
 import express from 'express';
+
 const jwt = require('jsonwebtoken');
 const SECRET = 'SECRET_KEY';
+
 const mongoose = require('mongoose');
+const env = require('dotenv');
+
 const app = express();
 const port = 3000;
 
@@ -28,9 +33,33 @@ const courseSchema = new mongoose.Schema({
     published: Boolean
 });
 
+// Mongoose model
+const User = mongoose.model('User', userSchema);
+const Admin = mongoose.model('Admin', adminSchema);
+const Course = mongoose.model('Course', courseSchema);
+
+// Mongoose connection
+const db = env.process.MONGO_URI;
+mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true });
+
+const authenticateJWT = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if(authHeader) {
+        const token = authHeader.split(' ')[1];
+
+        jwt.verify(token, SECRET, (err, user) => {
+            if(err) {
+                return res.sendStatus(403);
+            }
+            req.user = user;
+            next();
+        });
+    }
+};
 
 app.get('/', (req, res) => {
     // Landing page
+    res.send('Welcome to the eLearning platform');
 });
 
 app.get('/admin/signup', (req, res) => {
