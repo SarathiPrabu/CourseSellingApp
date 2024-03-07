@@ -1,11 +1,10 @@
-
-import express from 'express';
-
+const express = require('express');
+const authenticateJWT =  require("./middlewares/authenticateJWT")
 const jwt = require('jsonwebtoken');
-const SECRET = 'SECRET_KEY';
 
 const mongoose = require('mongoose');
-const env = require('dotenv');
+require('dotenv').config();
+const SECRET = process.env.SECRET_KEY;
 
 const app = express();
 const port = 3000;
@@ -15,13 +14,13 @@ app.use(express.json());
 
 // Mongoose schema
 const userSchema = new mongoose.Schema({
-    username: { type: String, unique: true},
+    username: { type: String, unique: true },
     password: String,
     purchasedCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }]
 });
 
 const adminSchema = new mongoose.Schema({
-    username: { type: String, unique: true},
+    username: { type: String, unique: true },
     password: String
 });
 
@@ -39,49 +38,74 @@ const Admin = mongoose.model('Admin', adminSchema);
 const Course = mongoose.model('Course', courseSchema);
 
 // Mongoose connection
-const db = env.process.MONGO_URI;
-mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true });
+const dbURI = process.env.MONGO_URI;
+mongoose.connect(dbURI)
+    .then(() => console.log('MongoDB connected...'))
+    .catch(err => console.error('MongoDB connection error:', err));
 
-const authenticateJWT = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if(authHeader) {
-        const token = authHeader.split(' ')[1];
-
-        jwt.verify(token, SECRET, (err, user) => {
-            if(err) {
-                return res.sendStatus(403);
-            }
-            req.user = user;
-            next();
-        });
-    }
-};
-
+// Routes
 app.get('/', (req, res) => {
     // Landing page
     res.send('Welcome to the eLearning platform');
 });
 
-app.get('/admin/signup', (req, res) => {
+
+
+app.post('/admin/signup', (req, res) => {
     // Admin signup page
+    const { username, password } = req.body;
+    function callback(admin) {
+        if (admin) {
+            res.status(403).json({ message: 'Admin already exists' });
+        }
+        else {
+            const obj = { username: username, password: password };
+            const newAdmin = new Admin(obj);
+            newAdmin.save();
+
+            const token = jwt.sign({ username, role: 'admin' }, SECRET, { expiresIn: '1h' });
+            res.json({
+                message: 'Admin created successfully',
+                token
+            });
+        }
+    }
+
+    Admin.findOne({ username }).then(callback);
 });
 
-app.post('/admin/login', (req, res) => {
-   // Admin login page
+app.post('/admin/login', async (req, res) => {
+    // Admin login page
+    const { username, password } = req.headers;
+    const admin = await Admin.findOne({ username, password });
+    if (admin) {
+        const token = jwt.sign({ username, role: 'admin' }, SECRET, { expiresIn: '1h' });
+        res.json({
+            message: "Logged in successfully",
+            token
+        })
+    }
+    else {
+        res.status(401).send({
+            message: "Login failed invalid username/password"
+        });
+    }
 });
 
 app.post('/admin/logout', (req, res) => {
     // Admin logout and destroy the session
 });
 
-app.get('/admin/courses', (_req, _res) => {
+app.get('/admin/courses', authenticateJWT,(_req, res) => {
     // Admin courses page
     // Display all courses in the database
+    res.json({message:"Displays the courses"});
 });
 
 
-app.post('/admin/courses', (req, res) => {
+app.post('/admin/courses',authenticateJWT, (req, res) => {
     // Add a new course to the database
+
 });
 
 app.put('/admin/courses:courseId', (req, res) => {
