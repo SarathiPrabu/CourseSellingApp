@@ -1,7 +1,5 @@
 // Initialize Mongoose models
-
 const mongoose = require('mongoose');
-
 
 const userSchema = new mongoose.Schema({
     username: { type: String, unique: true },
@@ -21,7 +19,6 @@ const courseSchema = new mongoose.Schema({
     imageLink: String,
     published: Boolean
 });
-
 
 // Mongoose model
 const User = mongoose.model('User', userSchema);
