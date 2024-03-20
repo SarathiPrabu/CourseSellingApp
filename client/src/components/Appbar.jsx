@@ -1,7 +1,16 @@
 import React from 'react';
 import './Appbar.css';
 
+
 function Appbar() {
+  const handleSignup = () => {
+    
+  };
+
+  const handleLogin = () => {
+    // Add your login logic here
+  };
+
   return (
     <div>
       <div className='app-bar-container'>
@@ -12,8 +21,8 @@ function Appbar() {
           Hello
         </div>
         <div className='buttons-container'>
-          <button className='course-appbar-button'>Signup</button>
-          <button className='course-appbar-button'>Login</button>
+          <button className='course-appbar-button' onClick={handleSignup}>Signup</button>
+          <button className='course-appbar-button' onClick={handleLogin}>Login</button>
         </div>
       </div>
     </div>
