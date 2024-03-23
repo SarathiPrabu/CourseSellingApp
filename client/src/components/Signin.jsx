@@ -3,15 +3,15 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import {Card, Typography} from "@mui/material";
 
-function Signup() {
+function Signin() {
     return (<div>
-            <div style={{
-                paddingTop: 150, marginBottom: 10, display: "flex", justifyContent: "center"
-            }}>
-                <Typography variant={"h6"}>
-                    Welcome to Coursera. Signup Below
-                </Typography>
-            </div>
+        <div style={{
+            paddingTop: 150, marginBottom: 10, display: "flex", justifyContent: "center"
+        }}>
+            <Typography variant={"h6"}>
+                Welcome back to Coursera. Signin Below
+            </Typography>
+        </div>
         <div style={{
             display:"flex",
             justifyContent:"center"
@@ -46,11 +46,11 @@ function Signup() {
                     {/*}}>Login</Button>*/}
                     <Button variant="contained" style={{
                         margin: 2
-                    }}>Sign up</Button>
+                    }}>Sign in</Button>
                 </div>
             </Card>
         </div>
     </div>)
 }
 
-export default Signup
+export default Signin
