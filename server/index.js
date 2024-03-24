@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors'); // Require CORS
 const config = require('./config/config');
 const connectDB = require('./models/database');
 const adminRoutes = require('./routes/adminRoutes');
@@ -9,6 +10,9 @@ connectDB();
 
 const app = express();
 app.use(express.json());
+
+// Enable CORS
+app.use(cors());
 
 // Routes
 app.use('/admin', adminRoutes);
