@@ -35,7 +35,7 @@ The server will start on the default port defined in your configuration file or 
 npm install &&
 npm run dev
 ```
-This will launch the application in development mode. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+This will launch the application in development mode.
 
 ## Usage
 
