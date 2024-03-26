@@ -13,7 +13,7 @@ function Course(){
             return res.json()
         }).then(data => {
             setCourse(data.course)
-            console.log(data.course)
+            console.log(course)
         })
     }, []);
     return <div>

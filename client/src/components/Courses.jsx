@@ -38,7 +38,7 @@ function Course(props) {
         <Typography textAlign={"center"}>{props.course.description}</Typography>
         {
             props.course.imageLink &&
-            <img src={props.course.imageLink} style={{width: 300, height: 200}}/>
+            <img src={props.course.imageLink} style={{width: 300, height: 200}} alt={"course image"}/>
         }
     </Card>;
     return element
