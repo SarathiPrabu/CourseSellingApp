@@ -2,8 +2,12 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import {Card, Typography} from "@mui/material";
+import {useState} from "react";
 
 function Signin() {
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+
     return (<div>
         <div style={{
             paddingTop: 150, marginBottom: 10, display: "flex", justifyContent: "center"
@@ -23,30 +27,49 @@ function Signin() {
                 }}>
                 <TextField
                     fullWidth={true}
-                    id="outlined-basic"
+                    id={"username"}
                     label="Username"
                     variant="outlined"
                     style={{
                         padding: 5
                     }}
+                    onChange={e=>{
+                        setUsername(e.target.value)
+                    }}
                 />
                 <TextField
                     fullWidth={true}
-                    id="outlined-basic"
+                    id={"password"}
                     label="Password"
                     variant="outlined"
                     type={"password"}
                     style={{
                         padding: 5
                     }}
+                    onChange={e=>{
+                        setPassword(e.target.value)
+                    }}
                 />
-                <div style={{}}>
-                    {/*<Button variant="contained" style={{*/}
-                    {/*    margin: 2*/}
-                    {/*}}>Login</Button>*/}
-                    <Button variant="contained" style={{
-                        margin: 2
-                    }}>Sign in</Button>
+                <div>
+                    <Button variant="contained"
+                            style={{
+                                margin: 2
+                    }}
+                            onClick={() =>{
+                                fetch("http://localhost:3000/admin/login",{
+                                    method:"POST",
+                                    headers:{
+                                        username,
+                                        password
+                                    }
+                                }).then((res) => {
+                                    return res.json()
+                                }).then(data => {
+                                    localStorage.setItem("token",data.token)
+                                    window.location = "courses"
+                                })
+                            }}
+                    >Sign in</Button>
                 </div>
             </Card>
         </div>

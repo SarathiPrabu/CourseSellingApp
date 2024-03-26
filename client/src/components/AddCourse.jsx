@@ -98,12 +98,12 @@ function AddCourse() {
                                 ),
                                 headers: {
                                     "Content-type": "application/json",
-                                    "authorization": "Bearer "+ localStorage.getItem("token")
+                                    "Authorization": "Bearer "+ localStorage.getItem("token")
                                 }
                             }).then(res => {
                                 return res.json()
                             }). then(data => {
-                                console.log(data)
+                                console.log("Course Added")
                             })
                         }}
                 >Submit</Button>
@@ -111,5 +111,4 @@ function AddCourse() {
         </div>
     </div>
 }
-
 export default AddCourse

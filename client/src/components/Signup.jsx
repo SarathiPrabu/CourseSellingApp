@@ -69,7 +69,7 @@ function Signup() {
                                     return res.json()
                                 }).then(data => {
                                     localStorage.setItem("token",data.token)
-                                    console.log("User Created!!!")
+                                    window.location = "courses"
                                 })
                             }}
                     >Sign up</Button>
