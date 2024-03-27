@@ -30,7 +30,7 @@ function Courses() {
 }
 
 function Course(props) {
-    let element = <Card
+    return <Card
         style={{
             margin: 10, width: 300, minHeight: 200
         }}>
@@ -45,7 +45,6 @@ function Course(props) {
                 window.location = "/course/" + props.course._id;
             }}>Edit</Button>
         </div>
-    </Card>;
-    return element
+    </Card>
 }
 export default Courses
