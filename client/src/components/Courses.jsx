@@ -18,7 +18,7 @@ function Courses() {
     return <div>
         <div style={{display: "flex", flexWrap:"wrap"}}>
             {courses.map(course => {
-                return <Course course={course}/>
+                return <Course key={course._id} course={course}/>
             })}
         </div>
         <div>
@@ -40,8 +40,12 @@ function Course(props) {
             props.course.imageLink &&
             <img src={props.course.imageLink} style={{width: 300, height: 200}} alt={"course image"}/>
         }
+        <div style={{display: "flex", justifyContent: "center", marginTop: 20}}>
+            <Button variant="contained" size="large" onClick={() => {
+                window.location = "/course/" + props.course._id;
+            }}>Edit</Button>
+        </div>
     </Card>;
     return element
 }
-
 export default Courses

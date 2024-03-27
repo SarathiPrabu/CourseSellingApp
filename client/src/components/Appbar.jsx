@@ -34,7 +34,11 @@ function Appbar() {
         return <div style={{
             padding: 5, display: "flex", justifyContent: "space-between"
         }}>
-            <div><Typography>Coursera</Typography></div>
+            <div style={{display:"flex"}}>
+                <Typography style={{marginRight:20}} variant={"h4"}>Coursera</Typography>
+                <Button onClick={()=> {window.location="/courses"}}>Courses</Button>
+                <Button onClick={()=> {window.location="/addcourse"}}>Add Course</Button>
+            </div>
             <div style={{
                 display: "flex"
             }}>
