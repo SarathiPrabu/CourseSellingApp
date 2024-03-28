@@ -76,7 +76,7 @@ router.post('/courses', authenticateJWT, async (req, res) => {
     }
 });
 
-router.put('/courses/:courseId', authenticateJWT, async (req, res) => {
+router.put('/course/:courseId', authenticateJWT, async (req, res) => {
     try {
         const course = await Course.findByIdAndUpdate(req.params.courseId, req.body, {new: true});
         if (!course) {

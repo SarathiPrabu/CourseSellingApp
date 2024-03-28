@@ -1,13 +1,20 @@
 import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
-import {Card, InputAdornment, Typography} from "@mui/material";
+import {Card, Typography} from "@mui/material";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import * as React from "react";
+import defaultCourseImage from "../assets/defaultCourse.webp"
 
 function Course() {
     const {courseId} = useParams();
-    const [course, setCourse] = useState([]);
+    const [course, setCourse] = useState({
+        title: "",
+        description:"",
+        price:0,
+        imageLink: "",
+        published: true
+    });
     useEffect(() => {
         fetch(`http://localhost:3000/admin/course/${courseId}`, {
             method: "GET", headers: {
@@ -21,19 +28,20 @@ function Course() {
     }, []);
     return <div>
         <CourseCard course={course}/>
-        <UpdateCard course={course} setCourse = {setCourse}/>
-
+        <UpdateCard course={course} setCourse={setCourse}/>
     </div>
 }
 
-function UpdateCard(props) {
-    const [courseTitle, setCourseTitle] = useState("");
-    const [courseDesc, setCourseDesc] = useState("");
-    const [price, setPrice] = useState(0);
-    const [imageSrc, setImageSrc] = useState("");
-    const course = props.course;
+const UpdateCard = React.memo((props) => {
+    const [courseData, setCourseData] = useState({
+        title: props.course.title,
+        description: props.course.description,
+        price: props.course.price,
+        imageLink: "",
+        published: true
+    });
 
-    return <div style={{display: "flex", justifyContent:"center"}}>
+    return <div style={{display: "flex", flexWrap: "wrap", justifyContent: "center"}}>
         <Card
             variant="outlined"
             sx={{boxShadow: 3}}
@@ -44,102 +52,87 @@ function UpdateCard(props) {
                 fullWidth={true}
                 label="Course Title"
                 variant="outlined"
-                style={{
-                    padding: 5
-
+                style={{padding: 5}}
+                defaultValue={()=>{
+                    console.log("Course Title ",courseData.title)
+                    return courseData.title
                 }}
-                onChange={(e) => {
-                    setCourseTitle(e.target.value)
-                }}
+                onChange={(e) => setCourseData({...courseData, title: e.target.value})}
             />
             <TextField
                 fullWidth={true}
                 label="Description"
                 variant="outlined"
-                style={{
-                    padding: 5,
-                    marginTop: 3
-                }}
-                onChange={(e) => {
-                    setCourseDesc(e.target.value)
-                }}
+                style={{padding: 5, marginTop: 3}}
+                value={courseData.description}
+                onChange={(e) => setCourseData({...courseData, description: e.target.value})}
             />
             <TextField
                 fullWidth={true}
                 placeholder={"Price"}
                 variant="outlined"
-                InputProps={{
-                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
-                    inputProps: {
-                        min: 0
-                    }
-                }}
                 type={"number"}
-                style={{
-                    padding: 5,
-                    marginTop: 3
-                }}
-                onChange={(e) => {
-                    const val = parseInt(e.target.value, 10);
-                    if (!isNaN(val) && val > 0) {
-                        setPrice(val);
-                    } else if (e.target.value === '') {
-                        setPrice(0);
-                    }
-                }}
+                value={courseData.price}
+                onChange={(e) => setCourseData({...courseData, price: e.target.value})}
+                style={{padding: 5, marginTop: 3}}
             />
             <TextField
                 fullWidth={true}
                 label="Image Link"
                 variant="outlined"
-                style={{
-                    padding: 5,
-                    marginTop: 3
-                }}
-                onChange={(e) => {
-                    setImageSrc(e.target.value)
-                }}
+                value={courseData.imageLink}
+                onChange={(e) => setCourseData({...courseData, imageLink: e.target.value})}
+                style={{padding: 5, marginTop: 3}}
             />
-            <Button variant="contained"
-                    style={{
-                        margin: 2
-                    }}
-                    onClick={() => {
-                        fetch("http://localhost:3000/admin/courses/" + course._id, {
-                            method: "PUT",
-                            body: JSON.stringify({
-                                    title: courseTitle,
-                                    description: courseDesc,
-                                    price,
-                                    imageLink: imageSrc,
-                                    published: true
-                                }
-                            ),
-                            headers: {
-                                "Content-type": "application/json",
-                                "Authorization": "Bearer " + localStorage.getItem("token")
+            <Button
+                variant="contained"
+                style={{margin: 2}}
+                onClick={() => {
+                    fetch(`http://localhost:3000/admin/course/${props.course._id}`, {
+                        method: "PUT",
+                        body: JSON.stringify({
+                            title: courseData.title,
+                            description: courseData.description,
+                            price: courseData.price,
+                            imageLink: courseData.imageLink,
+                            published: true
+                        }),
+                        headers: {
+                            "Content-type": "application/json",
+                            "Authorization": "Bearer " + localStorage.getItem("token")
+                        }
+                    })
+                        .then(res => {
+                            if (res.ok) {
+                                return res.json();
+                            } else {
+                                throw new Error("Failed to update course");
                             }
-                        }).then(res => {
-                            return res.json()
-                        }).then(data => {
-                            props.setCourse(data)
                         })
-                    }}
-            >Update</Button>
-        </Card></div>
-}
+                        .then(() => {
+                            props.setCourse(courseData);
+                        })
+                        .catch(error => {
+                            console.error("Update failed:", error);
+                        });
+                }}
+            >UPDATE</Button>
+        </Card>
+    </div>
+});
 
 function CourseCard(props) {
-    return <div style={{display: "flex", flexWrap: "wrap", justifyContent:"center"}}>
+    return <div style={{display: "flex", flexWrap: "wrap", justifyContent: "center"}}>
         <Card
             style={{
-                margin: 10, width: 300, minHeight: 200
+                margin: 10, width: 300, minHeight: 200, borderRadius:16, overflow: "hidden"
             }}>
+            {(props.course.imageLink || defaultCourseImage) && (
+                <img src={(props.course.imageLink || defaultCourseImage)} style={{margin:5, width: 290, height: 200, borderRadius: "inherit"}} alt={"course image"}/>
+            )}
             <Typography textAlign={"center"}> {props.course.title}</Typography>
             <Typography textAlign={"center"}>{props.course.description}</Typography>
-            {props.course.imageLink && ( // Conditionally render image if available
-                <img src={props.course.imageLink} style={{width: 300, height: 200}} alt={"course image"}/>
-            )}
+
         </Card>
     </div>
 }
